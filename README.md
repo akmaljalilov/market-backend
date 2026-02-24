@@ -1,92 +1,109 @@
-# Market — Backend Service (Golang)
+# Market — Golang Backend
 
 ## 📌 Overview
 
-**Market** is a backend service written in **Golang**, designed to power a marketplace platform.
-It provides APIs for managing users, products, orders, and payments, and is built with scalability and microservice-friendly architecture in mind.
-
----
-
-## 🚀 Features
-
-* RESTful API built with Golang
-* Modular project structure for easy scaling
-* Database integration (PostgreSQL/MySQL supported)
-* Authentication & authorization ready
-* Environment-based configuration
-* Docker support for containerized deployment
-* CI/CD friendly
+**Market** is a Golang backend service for a marketplace system.
+The project is structured to support modular business domains (users, products, sales), database migrations, SQLC-based queries, WebSocket support, and Dockerized deployment.
 
 ---
 
 ## 🏗️ Project Structure
 
 ```
-market/
+.
+├── main.go                # Application entry point
+├── app/                   # Core application modules
+│   ├── app.go             # App bootstrap / wiring
+│   ├── users/             # User domain logic
+│   ├── products/          # Product domain logic
+│   └── sales/             # Sales domain logic
 │
-├── cmd/                # Application entrypoints
-├── internal/           # Core business logic
-│   ├── handlers/       # HTTP handlers
-│   ├── services/       # Business services
-│   ├── repositories/   # Database layer
-│   └── models/         # Data models
+├── api/                   # HTTP API layer
+│   ├── api.go             # Router initialization
+│   ├── public/            # Public endpoints
+│   └── private/           # Auth-protected endpoints
 │
-├── pkg/                # Shared utilities
-├── configs/            # Config files
-├── migrations/         # DB migrations
-├── scripts/            # Helper scripts
-├── docker/             # Docker files
+├── socket/                # WebSocket handling
+│   └── socket.go
+│
+├── db/                    # Database layer
+│   ├── migrations/        # SQL migrations
+│   └── query/             # SQLC generated queries
+│
+├── services/              # External service integrations
+│   └── posgresql/         # PostgreSQL connection/service logic
+│
+├── pkg/                   # Shared packages
+│   └── config/            # Config loader & models
+│
+├── utils/                 # Helper utilities
+│   └── yml.go             # YAML helpers
+│
+├── config.yml             # Application configuration
+├── sqlc.yaml              # SQLC configuration
+├── docker-compose.yml     # Local environment setup
+├── Makefile               # Project commands
+├── go.mod / go.sum        # Dependencies
 └── README.md
 ```
+
+---
+
+## 🚀 Features
+
+* Modular domain-driven structure
+* SQLC-based type-safe database queries
+* Migration-ready PostgreSQL setup
+* REST API with public/private routing
+* WebSocket support
+* YAML-based configuration
+* Docker environment for local development
 
 ---
 
 ## ⚙️ Requirements
 
 * Go 1.20+
-* PostgreSQL / MySQL
-* Docker (optional but recommended)
+* PostgreSQL
+* sqlc
+* Docker (optional)
 
 ---
 
-## 🔧 Installation
+## 🔧 Setup
 
-### 1. Clone repository
-
-```bash
-git clone https://github.com/yourusername/market.git
-cd market
-```
-
-### 2. Install dependencies
+### 1. Install dependencies
 
 ```bash
 go mod download
 ```
 
-### 3. Configure environment
+### 2. Configure app
 
-Create `.env` file:
+Edit `config.yml` with your database and service settings.
 
-```
-APP_PORT=8080
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=market
-```
+---
 
-### 4. Run migrations
+### 3. Run migrations
 
 ```bash
 make migrate-up
 ```
 
-### 5. Start server
+---
+
+### 4. Generate SQLC code
 
 ```bash
-go run ./cmd/app/main.go
+make sqlc
+```
+
+---
+
+### 5. Run application
+
+```bash
+go run main.go
 ```
 
 ---
@@ -99,17 +116,6 @@ docker-compose up --build
 
 ---
 
-## 📡 API Example
-
-```
-GET /health        -> service status
-POST /users        -> create user
-POST /products     -> create product
-POST /orders       -> create order
-```
-
----
-
 ## 🧪 Testing
 
 ```bash
@@ -118,42 +124,46 @@ go test ./...
 
 ---
 
-## 📦 Build
+## 📦 Useful Make Commands
 
 ```bash
-go build -o market ./cmd/app
+make run          # start app
+make migrate-up   # apply migrations
+make migrate-down # rollback migration
+make sqlc         # regenerate SQLC code
 ```
 
 ---
 
-## 🔐 Environment Variables
+## 🔐 Configuration
 
-| Variable    | Description   |
-| ----------- | ------------- |
-| APP_PORT    | Server port   |
-| DB_HOST     | Database host |
-| DB_PORT     | Database port |
-| DB_USER     | DB user       |
-| DB_PASSWORD | DB password   |
-| DB_NAME     | Database name |
+All runtime configuration is stored in:
 
----
+```
+config.yml
+```
 
-## 🤝 Contributing
-
-1. Fork repository
-2. Create feature branch
-3. Commit changes
-4. Open Pull Request
+It is loaded via `pkg/config`.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+MIT
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Notes
 
-Backend powered by Golang for scalable marketplace systems.
+This project follows a modular service-oriented structure rather than strict clean architecture, allowing faster development while keeping domains isolated.
+
+---
+
+If you want, I can also generate for you:
+
+* 🔹 `.env` support instead of YAML
+* 🔹 GitHub Actions CI
+* 🔹 Production-ready Dockerfile
+* 🔹 Example config.yml template
+
+Just tell me which one you want next.
