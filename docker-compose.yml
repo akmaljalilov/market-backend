@@ -1,0 +1,30 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+version: '3.2'
+
+# Define services
+services:
+  postgres:
+    image: postgres:latest
+    networks:
+      aj_market-net:
+        ipv4_address: 172.28.1.10
+    container_name: postgres
+    environment:
+      POSTGRES_DB: aj_market
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d mln" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  pg_data:
+networks:
+  aj_market-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
