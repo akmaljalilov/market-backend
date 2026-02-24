@@ -1,9 +1,9 @@
-# Market — Golang Backend
+# Market — Golang Backend Service
 
 ## 📌 Overview
 
-**Market** is a Golang backend service for a marketplace system.
-The project is structured to support modular business domains (users, products, sales), database migrations, SQLC-based queries, WebSocket support, and Dockerized deployment.
+**Market** is a backend service written in **Go**, designed for a marketplace system.
+The project follows a clean, modular structure using `internal` packages, SQLC for database access, migrations, and Docker for local development.
 
 ---
 
@@ -11,39 +11,28 @@ The project is structured to support modular business domains (users, products, 
 
 ```
 .
-├── main.go                # Application entry point
-├── app/                   # Core application modules
-│   ├── app.go             # App bootstrap / wiring
-│   ├── users/             # User domain logic
-│   ├── products/          # Product domain logic
-│   └── sales/             # Sales domain logic
+├── cmd/server/main.go        # Application entrypoint
+├── internal/                 # Private application code
+│   ├── bootstrap/            # App initialization & wiring
+│   ├── config/               # Config loader & models
+│   ├── domain/               # Business entities & logic
+│   ├── repository/           # Database access layer
+│   ├── transport/
+│   │   ├── http/             # HTTP server
+│   │   │   ├── handlers/     # HTTP handlers
+│   │   │   ├── middleware/   # HTTP middleware
+│   │   │   └── router.go     # Route setup
+│   │   └── websocket/        # WebSocket transport
+│   └── utils/                # Shared utilities
 │
-├── api/                   # HTTP API layer
-│   ├── api.go             # Router initialization
-│   ├── public/            # Public endpoints
-│   └── private/           # Auth-protected endpoints
+├── db/
+│   ├── migrations/           # SQL migrations
+│   └── query/                # SQLC generated queries
 │
-├── socket/                # WebSocket handling
-│   └── socket.go
-│
-├── db/                    # Database layer
-│   ├── migrations/        # SQL migrations
-│   └── query/             # SQLC generated queries
-│
-├── services/              # External service integrations
-│   └── posgresql/         # PostgreSQL connection/service logic
-│
-├── pkg/                   # Shared packages
-│   └── config/            # Config loader & models
-│
-├── utils/                 # Helper utilities
-│   └── yml.go             # YAML helpers
-│
-├── config.yml             # Application configuration
-├── sqlc.yaml              # SQLC configuration
-├── docker-compose.yml     # Local environment setup
-├── Makefile               # Project commands
-├── go.mod / go.sum        # Dependencies
+├── config.yml                # App configuration
+├── sqlc.yaml                 # SQLC configuration
+├── docker-compose.yml        # Local services setup
+├── Makefile                  # Project commands
 └── README.md
 ```
 
@@ -51,13 +40,13 @@ The project is structured to support modular business domains (users, products, 
 
 ## 🚀 Features
 
-* Modular domain-driven structure
-* SQLC-based type-safe database queries
+* Clean internal package architecture
+* SQLC type-safe queries
 * Migration-ready PostgreSQL setup
-* REST API with public/private routing
+* HTTP API with middleware support
 * WebSocket support
 * YAML-based configuration
-* Docker environment for local development
+* Docker environment for development
 
 ---
 
@@ -78,9 +67,15 @@ The project is structured to support modular business domains (users, products, 
 go mod download
 ```
 
-### 2. Configure app
+### 2. Configure application
 
-Edit `config.yml` with your database and service settings.
+Edit:
+
+```
+config.yml
+```
+
+Set database credentials, ports, and service settings.
 
 ---
 
@@ -100,10 +95,10 @@ make sqlc
 
 ---
 
-### 5. Run application
+### 5. Start server
 
 ```bash
-go run main.go
+go run ./cmd/server
 ```
 
 ---
@@ -124,26 +119,26 @@ go test ./...
 
 ---
 
-## 📦 Useful Make Commands
+## 📦 Common Make Commands
 
 ```bash
-make run          # start app
-make migrate-up   # apply migrations
-make migrate-down # rollback migration
-make sqlc         # regenerate SQLC code
+make run           # Start application
+make migrate-up    # Apply DB migrations
+make migrate-down  # Rollback migrations
+make sqlc          # Generate SQLC queries
 ```
 
 ---
 
 ## 🔐 Configuration
 
-All runtime configuration is stored in:
+All runtime configuration is loaded from:
 
 ```
 config.yml
 ```
 
-It is loaded via `pkg/config`.
+Handled by the `internal/config` package.
 
 ---
 
@@ -155,15 +150,13 @@ MIT
 
 ## 👨‍💻 Notes
 
-This project follows a modular service-oriented structure rather than strict clean architecture, allowing faster development while keeping domains isolated.
+This project keeps all business logic inside `internal` to prevent unintended external imports and enforce clear service boundaries.
 
 ---
 
-If you want, I can also generate for you:
+If you want, I can also generate:
 
-* 🔹 `.env` support instead of YAML
-* 🔹 GitHub Actions CI
-* 🔹 Production-ready Dockerfile
-* 🔹 Example config.yml template
-
-Just tell me which one you want next.
+* Production-ready **Dockerfile**
+* Example **config.yml**
+* CI pipeline for **GitHub Actions**
+* Base **

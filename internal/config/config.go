@@ -2,7 +2,7 @@ package config
 
 import (
 	"io"
-	"market/utils"
+	"market/internal/utils"
 	"os"
 
 	"github.com/caarlos0/env/v11"

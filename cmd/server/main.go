@@ -1,8 +1,8 @@
 package main
 
 import (
-	"market/app"
-	config2 "market/pkg/config"
+	"market/internal/bootstrap"
+	config2 "market/internal/config"
 )
 
 func main() {
@@ -10,5 +10,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	app.Start(config)
+	bootstrap.Start(config)
 }
