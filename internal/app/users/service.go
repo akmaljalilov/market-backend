@@ -10,17 +10,23 @@ func NewService(repo Repository) *Service {
 }
 
 // Register a new user
-func (s *Service) Register(name, email, password string, phoneNumbers []string, role Role, data string) (string, error) {
-	id, err := s.repo.Create(&NewUser{
-		Name:         name,
-		Email:        email,
-		Password:     password,
-		Data:         data,
-		PhoneNumbers: phoneNumbers,
-		Role:         role,
-	})
+func (s *Service) Register(name, email, password string, phoneNumbers []string, role Role, data string) (*User, error) {
+	user, err := s.repo.GetByUsername(name)
 	if err != nil {
-		return "", err
+		resp, err := s.repo.Create(&NewUser{
+			Username:     name,
+			Name:         name,
+			Email:        email,
+			Password:     password,
+			Data:         data,
+			PhoneNumbers: phoneNumbers,
+			Role:         role,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp, nil
 	}
-	return id, nil
+	return user, nil
+
 }

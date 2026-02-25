@@ -13,17 +13,24 @@ const (
 	RoleDealer
 )
 
-type UserID string
-
 type User struct {
-	ID        UserID
-	Name      string
-	Email     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID           string
+	Username     string
+	Name         string
+	Email        *string
+	Data         *string
+	PhoneNumbers []string
+	Role         Role
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
+type NewUserResp struct {
+	UUID     string
+	Username string
+}
 type NewUser struct {
+	Username     string
 	Name         string
 	Email        string
 	Password     string

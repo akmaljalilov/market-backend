@@ -259,6 +259,7 @@ type StockMovement struct {
 
 type User struct {
 	ID           pgtype.UUID      `json:"id"`
+	Username     string           `json:"username"`
 	Name         string           `json:"name"`
 	Data         *string          `json:"data"`
 	Email        *string          `json:"email"`

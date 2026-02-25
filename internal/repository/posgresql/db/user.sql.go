@@ -7,16 +7,15 @@ package postgres
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (name, email, phone_number, password_hash, role, data)
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+INSERT INTO users (username, name, email, phone_number, password_hash, role, data)
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, username, name, data, email, phone_number, password_hash, role, created, updated
 `
 
 type CreateUserParams struct {
+	Username     string       `json:"username"`
 	Name         string       `json:"name"`
 	Email        *string      `json:"email"`
 	PhoneNumber  []string     `json:"phone_number"`
@@ -25,8 +24,9 @@ type CreateUserParams struct {
 	Data         *string      `json:"data"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.UUID, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
+		arg.Username,
 		arg.Name,
 		arg.Email,
 		arg.PhoneNumber,
@@ -34,7 +34,42 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.
 		arg.Role,
 		arg.Data,
 	)
-	var id pgtype.UUID
-	err := row.Scan(&id)
-	return id, err
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Name,
+		&i.Data,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.PasswordHash,
+		&i.Role,
+		&i.Created,
+		&i.Updated,
+	)
+	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, name, data, email, phone_number, password_hash, role, created, updated
+FROM users
+where username = $1
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Name,
+		&i.Data,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.PasswordHash,
+		&i.Role,
+		&i.Created,
+		&i.Updated,
+	)
+	return i, err
 }

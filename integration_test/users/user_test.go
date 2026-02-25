@@ -31,7 +31,10 @@ func init() {
 	service = users.NewService(userRepo)
 }
 func TestService_Register(t *testing.T) {
-	id, err := service.Register("Aminjon", "", []string{"+992985068500"}, users.RoleCashier)
+	resp, err := service.Register("Aminjon", "", "@Test123", []string{"+992985068500"}, users.RoleCashier, "")
 	assert.NoError(t, err)
-	assert.NotEmpty(t, id)
+	assert.NotEmpty(t, resp)
+	assert.Equal(t, resp.Username, "aminjon")
+	assert.Equal(t, resp.Role, users.RoleCashier)
+	assert.NotEmpty(t, resp.ID)
 }

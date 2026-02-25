@@ -15,7 +15,8 @@ func NewUsersHandler(s *users.Service) *UsersHandler {
 }
 
 type createUserResponse struct {
-	UUID string `json:"uuid"`
+	UUID     string `json:"uuid"`
+	Username string `json:"username"`
 }
 type createUserReq struct {
 	Name         string     `json:"name"`
@@ -45,10 +46,10 @@ func (h *UsersHandler) CreateUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	id, err := h.service.Register(req.Name, req.Email, req.Password, req.PhoneNumbers, req.Role, req.Data)
+	resp, err := h.service.Register(req.Name, req.Email, req.Password, req.PhoneNumbers, req.Role, req.Data)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(createUserResponse{UUID: id})
+	return c.Status(fiber.StatusCreated).JSON(createUserResponse{UUID: resp.UUID, Username: resp.Username})
 }

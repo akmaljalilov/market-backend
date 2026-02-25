@@ -6,12 +6,11 @@ package postgres
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
-	CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.UUID, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	GetUserByUsername(ctx context.Context, username string) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)
