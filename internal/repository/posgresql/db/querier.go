@@ -6,11 +6,19 @@ package postgres
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
+	AddConsumptionPurchase(ctx context.Context, arg AddConsumptionPurchaseParams) error
+	AddPurchaseItem(ctx context.Context, arg AddPurchaseItemParams) (int, error)
+	CreatePurchase(ctx context.Context, dealerID pgtype.UUID) (int, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
+	InsertCategory(ctx context.Context, arg InsertCategoryParams) (int, error)
+	InsertProduct(ctx context.Context, arg InsertProductParams) (int, error)
+	ListMeasurement(ctx context.Context) ([]Measurement, error)
 }
 
 var _ Querier = (*Queries)(nil)

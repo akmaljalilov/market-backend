@@ -191,9 +191,19 @@ type Asset struct {
 }
 
 type Category struct {
-	ID      int              `json:"id"`
-	Name    *string          `json:"name"`
-	Created pgtype.Timestamp `json:"created"`
+	ID            int              `json:"id"`
+	Name          string           `json:"name"`
+	MeasurementID int              `json:"measurement_id"`
+	Created       pgtype.Timestamp `json:"created"`
+	Updated       pgtype.Timestamp `json:"updated"`
+}
+
+type Measurement struct {
+	ID         int              `json:"id"`
+	Name       string           `json:"name"`
+	UnitSymbol string           `json:"unit_symbol"`
+	Created    pgtype.Timestamp `json:"created"`
+	Updated    pgtype.Timestamp `json:"updated"`
 }
 
 type Payment struct {
@@ -206,30 +216,26 @@ type Payment struct {
 
 type Product struct {
 	ID         int              `json:"id"`
-	Name       *string          `json:"name"`
-	CategoryID *int             `json:"category_id"`
-	DealerID   pgtype.UUID      `json:"dealer_id"`
-	Price      pgtype.Numeric   `json:"price"`
-	Stock      *int             `json:"stock"`
+	Name       string           `json:"name"`
+	CategoryID int              `json:"category_id"`
 	Created    pgtype.Timestamp `json:"created"`
 	Updated    pgtype.Timestamp `json:"updated"`
 }
 
 type PurchaseItem struct {
 	ID              int            `json:"id"`
-	PurchaseOrderID *int           `json:"purchase_order_id"`
-	ProductID       *int           `json:"product_id"`
-	Quantity        *int           `json:"quantity"`
+	PurchaseOrderID int            `json:"purchase_order_id"`
+	ProductID       int            `json:"product_id"`
+	Quantity        int            `json:"quantity"`
 	Price           pgtype.Numeric `json:"price"`
-	Total           pgtype.Numeric `json:"total"`
+	Status          bool           `json:"status"`
 }
 
 type PurchaseOrder struct {
 	ID          int              `json:"id"`
 	DealerID    pgtype.UUID      `json:"dealer_id"`
-	TotalAmount pgtype.Numeric   `json:"total_amount"`
-	Status      *string          `json:"status"`
 	Created     pgtype.Timestamp `json:"created"`
+	Consumption pgtype.Numeric   `json:"consumption"`
 }
 
 type Sale struct {

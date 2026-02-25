@@ -2,7 +2,8 @@ package users
 
 import (
 	"context"
-	users "market/internal/app/users"
+	"fmt"
+	"market/internal/app/products"
 	"market/internal/config"
 	repo "market/internal/repository/posgresql"
 	postgres "market/internal/repository/posgresql/db"
@@ -13,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var userService *users.Service
+var productService *products.Service
 
 func init() {
 	cfg := config.Postgres{
@@ -27,14 +28,15 @@ func init() {
 		logrus.Fatal("cannot connect to db:", err)
 	}
 	tx := postgres.New(testDB)
-	userRepo := repo.NewUsersRepo(tx)
-	userService = users.NewService(userRepo)
+	repo := repo.NewProductsRepo(tx)
+	productService = products.NewService(repo)
 }
-func TestService_Register(t *testing.T) {
-	resp, err := userService.Register("Aminjon", "", "@Test123", []string{"+992985068500"}, users.RoleCashier, "")
+func TestService_RegisterProduct(t *testing.T) {
+	list, err := productService.ListMeasurement()
 	assert.NoError(t, err)
-	assert.NotEmpty(t, resp)
-	assert.Equal(t, resp.Username, "aminjon")
-	assert.Equal(t, resp.Role, users.RoleCashier)
-	assert.NotEmpty(t, resp.ID)
+	assert.NotEmpty(t, list)
+	for i, m := range list {
+		err = productService.Register(fmt.Sprintf("category_id-%d", i), m.Id)
+		assert.NoError(t, err)
+	}
 }
