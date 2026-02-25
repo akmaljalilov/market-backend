@@ -1,0 +1,80 @@
+definitions:
+  http.createUserReq:
+    properties:
+      data:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phoneNumbers:
+        items:
+          type: string
+        type: array
+      role:
+        $ref: '#/definitions/users.Role'
+    type: object
+  http.createUserResponse:
+    properties:
+      uuid:
+        type: string
+    type: object
+  users.Role:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-varnames:
+    - RoleAdmin
+    - RoleCashier
+    - RoleClient
+    - RoleDealer
+info:
+  contact: {}
+paths:
+  /api/users:
+    post:
+      consumes:
+      - application/json
+      description: CreateUser
+      operationId: create-user
+      parameters:
+      - description: user info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/http.createUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.createUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            type: object
+        "429":
+          description: Too Many Requests
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+        default:
+          description: ""
+          schema:
+            type: object
+      summary: CreateUser User
+      tags:
+      - Users
+swagger: "2.0"

@@ -15,7 +15,7 @@ The project follows a clean, modular structure using `internal` packages, SQLC f
 ├── internal/                 # Private application code
 │   ├── bootstrap/            # App initialization & wiring
 │   ├── config/               # Config loader & models
-│   ├── domain/               # Business entities & logic
+│   ├── app/                  # Business entities & logic
 │   ├── repository/           # Database access layer
 │   ├── transport/
 │   │   ├── http/             # HTTP server

@@ -1,0 +1,6 @@
+postgres:
+  dbname: aj_market
+  host: localhost
+  password: mysecretpassword
+  username: root
+  port: 5432
