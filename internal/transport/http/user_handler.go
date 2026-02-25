@@ -51,5 +51,5 @@ func (h *UsersHandler) CreateUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(createUserResponse{UUID: resp.UUID, Username: resp.Username})
+	return c.Status(fiber.StatusCreated).JSON(createUserResponse{UUID: resp.ID, Username: resp.Username})
 }
