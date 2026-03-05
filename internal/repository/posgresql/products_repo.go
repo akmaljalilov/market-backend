@@ -17,10 +17,11 @@ func NewProductsRepo(db *postgres.Queries) *ProductsRepo {
 	return &ProductsRepo{db: db}
 }
 
-func (r ProductsRepo) Register(name string, measurementId int) (int, error) {
+func (r ProductsRepo) Register(name string, measurementId int, parentId *int) (int, error) {
 	return r.db.InsertCategory(context.Background(), postgres.InsertCategoryParams{
 		Name:          name,
 		MeasurementID: measurementId,
+		CategoryID:    parentId,
 	})
 }
 
@@ -31,15 +32,15 @@ func (r ProductsRepo) InsertProduct(name string, categoryID int) (int, error) {
 	})
 }
 
-func (r ProductsRepo) AddConsumptionPurchase(purchaseId int, consumption string) error {
+func (r ProductsRepo) AddConsumptionPurchaseItem(purchaseItemId int, sum string) error {
 	var n pgtype.Numeric
-	err := n.ScanScientific(consumption)
+	err := n.ScanScientific(sum)
 	if err != nil {
 		return err
 	}
-	return r.db.AddConsumptionPurchase(context.Background(), postgres.AddConsumptionPurchaseParams{
-		Consumption: n,
-		ID:          purchaseId,
+	return r.db.AddExpensesPurchaseItem(context.Background(), postgres.AddExpensesPurchaseItemParams{
+		Sum:            n,
+		PurchaseItemID: purchaseItemId,
 	})
 }
 

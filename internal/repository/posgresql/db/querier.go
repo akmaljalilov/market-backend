@@ -11,7 +11,7 @@ import (
 )
 
 type Querier interface {
-	AddConsumptionPurchase(ctx context.Context, arg AddConsumptionPurchaseParams) error
+	AddExpensesPurchaseItem(ctx context.Context, arg AddExpensesPurchaseItemParams) error
 	AddPurchaseItem(ctx context.Context, arg AddPurchaseItemParams) (int, error)
 	CreatePurchase(ctx context.Context, dealerID pgtype.UUID) (int, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)

@@ -194,6 +194,7 @@ type Category struct {
 	ID            int              `json:"id"`
 	Name          string           `json:"name"`
 	MeasurementID int              `json:"measurement_id"`
+	CategoryID    *int             `json:"category_id"`
 	Created       pgtype.Timestamp `json:"created"`
 	Updated       pgtype.Timestamp `json:"updated"`
 }
@@ -220,6 +221,14 @@ type Product struct {
 	CategoryID int              `json:"category_id"`
 	Created    pgtype.Timestamp `json:"created"`
 	Updated    pgtype.Timestamp `json:"updated"`
+}
+
+type PurchaseExpense struct {
+	ID             int              `json:"id"`
+	PurchaseItemID int              `json:"purchase_item_id"`
+	Sum            pgtype.Numeric   `json:"sum"`
+	Created        pgtype.Timestamp `json:"created"`
+	Updated        pgtype.Timestamp `json:"updated"`
 }
 
 type PurchaseItem struct {

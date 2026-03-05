@@ -11,18 +11,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addConsumptionPurchase = `-- name: AddConsumptionPurchase :exec
-UPDATE purchase_orders SET consumption=$1
-WHERE id=$2
+const addExpensesPurchaseItem = `-- name: AddExpensesPurchaseItem :exec
+UPDATE purchase_expenses SET sum=$1
+WHERE purchase_item_id=$2
 `
 
-type AddConsumptionPurchaseParams struct {
-	Consumption pgtype.Numeric `json:"consumption"`
-	ID          int            `json:"id"`
+type AddExpensesPurchaseItemParams struct {
+	Sum            pgtype.Numeric `json:"sum"`
+	PurchaseItemID int            `json:"purchase_item_id"`
 }
 
-func (q *Queries) AddConsumptionPurchase(ctx context.Context, arg AddConsumptionPurchaseParams) error {
-	_, err := q.db.Exec(ctx, addConsumptionPurchase, arg.Consumption, arg.ID)
+func (q *Queries) AddExpensesPurchaseItem(ctx context.Context, arg AddExpensesPurchaseItemParams) error {
+	_, err := q.db.Exec(ctx, addExpensesPurchaseItem, arg.Sum, arg.PurchaseItemID)
 	return err
 }
 
@@ -63,17 +63,18 @@ func (q *Queries) CreatePurchase(ctx context.Context, dealerID pgtype.UUID) (int
 }
 
 const insertCategory = `-- name: InsertCategory :one
-INSERT INTO categories (name, measurement_id)
-VALUES ($1, $2) RETURNING id
+INSERT INTO categories (name, measurement_id, category_id)
+VALUES ($1, $2, $3) RETURNING id
 `
 
 type InsertCategoryParams struct {
 	Name          string `json:"name"`
 	MeasurementID int    `json:"measurement_id"`
+	CategoryID    *int   `json:"category_id"`
 }
 
 func (q *Queries) InsertCategory(ctx context.Context, arg InsertCategoryParams) (int, error) {
-	row := q.db.QueryRow(ctx, insertCategory, arg.Name, arg.MeasurementID)
+	row := q.db.QueryRow(ctx, insertCategory, arg.Name, arg.MeasurementID, arg.CategoryID)
 	var id int
 	err := row.Scan(&id)
 	return id, err
