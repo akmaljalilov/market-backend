@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
 
 func InitConfig() (*Config, error) {
@@ -24,6 +25,10 @@ func InitConfig() (*Config, error) {
 		}
 	}
 	err := env.Parse(cfg)
+	if err != nil {
+		return nil, err
+	}
+	err = godotenv.Load()
 	if err != nil {
 		return nil, err
 	}

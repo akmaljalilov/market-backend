@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var productService *products.Service
+var productService *products.App
 
 func init() {
 	cfg := config.Postgres{
@@ -29,14 +29,14 @@ func init() {
 	}
 	tx := postgres.New(testDB)
 	repo := repo.NewProductsRepo(tx)
-	productService = products.NewService(repo)
+	productService = products.New(repo)
 }
 func TestService_RegisterProduct(t *testing.T) {
 	list, err := productService.ListMeasurement()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, list)
 	for i, m := range list {
-		err = productService.Register(fmt.Sprintf("category_id-%d", i), m.Id)
+		err = productService.Register(fmt.Sprintf("category_id-%d", i), m.Id, nil)
 		assert.NoError(t, err)
 	}
 }

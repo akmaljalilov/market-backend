@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"encoding/json"
-	"market/internal/app/users"
 	"market/internal/config"
 	"market/internal/deps"
 	"market/internal/transport/http"
@@ -14,8 +13,6 @@ import (
 
 func Start(cfg *config.Config) {
 	services := deps.Init(cfg)
-	userService := users.NewService(services.UserRepo)
-	userHandler := http.NewUsersHandler(userService)
 	app := fiber.New(fiber.Config{
 		JSONDecoder:  json.Unmarshal,
 		JSONEncoder:  json.Marshal,
@@ -23,7 +20,7 @@ func Start(cfg *config.Config) {
 		BodyLimit:    500 * 1024 * 1024,
 	})
 	swagger.SwaggerRoute(app, cfg)
-	http.RegisterUsersRoutes(app, userHandler)
+	http.RegisterRoutes(app, services)
 	logrus.Fatal(app.Listen(":3000"))
 
 }

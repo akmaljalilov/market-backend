@@ -26,5 +26,7 @@ func (p Postgres) JDBC() string {
 }
 
 type Config struct {
-	Postgres Postgres `yaml:"postgres"`
+	Postgres   Postgres `yaml:"postgres"`
+	PrivateKey string   `yaml:"privateKey"    env:"PRIVATE_KEY"`
+	PublicKey  string   `yaml:"pub"           env:"PUBLIC_KEY"`
 }

@@ -13,16 +13,21 @@ const (
 	RoleDealer
 )
 
+type SignInResponse struct {
+	User
+	Token string `json:"token"`
+}
 type User struct {
-	ID           string
-	Username     string
-	Name         string
-	Email        *string
-	Data         *string
-	PhoneNumbers []string
-	Role         Role
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID           string    `json:"id"`
+	Username     string    `json:"username"`
+	Name         string    `json:"name"`
+	Email        *string   `json:"email"`
+	Data         *string   `json:"data"`
+	PhoneNumbers []string  `json:"phoneNumbers"`
+	Password     string    `json:"-"`
+	Role         Role      `json:"role"`
+	CreatedAt    time.Time `json:"-"`
+	UpdatedAt    time.Time `json:"-"`
 }
 
 type NewUserResp struct {

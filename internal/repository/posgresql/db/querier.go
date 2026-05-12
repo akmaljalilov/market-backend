@@ -16,6 +16,7 @@ type Querier interface {
 	CreatePurchase(ctx context.Context, dealerID pgtype.UUID) (int, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
+	GetUserByid(ctx context.Context, id pgtype.UUID) (User, error)
 	InsertCategory(ctx context.Context, arg InsertCategoryParams) (int, error)
 	InsertProduct(ctx context.Context, arg InsertProductParams) (int, error)
 	ListMeasurement(ctx context.Context) ([]Measurement, error)
