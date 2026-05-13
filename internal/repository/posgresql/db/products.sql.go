@@ -12,30 +12,32 @@ import (
 )
 
 const addExpensesPurchaseItem = `-- name: AddExpensesPurchaseItem :exec
-UPDATE purchase_expenses SET sum=$1
-WHERE purchase_item_id=$2
+INSERT INTO purchase_expenses (sum, purchase_item_id, data)
+VALUES ($1, $2, $3)
 `
 
 type AddExpensesPurchaseItemParams struct {
 	Sum            pgtype.Numeric `json:"sum"`
 	PurchaseItemID int            `json:"purchase_item_id"`
+	Data           *string        `json:"data"`
 }
 
 func (q *Queries) AddExpensesPurchaseItem(ctx context.Context, arg AddExpensesPurchaseItemParams) error {
-	_, err := q.db.Exec(ctx, addExpensesPurchaseItem, arg.Sum, arg.PurchaseItemID)
+	_, err := q.db.Exec(ctx, addExpensesPurchaseItem, arg.Sum, arg.PurchaseItemID, arg.Data)
 	return err
 }
 
 const addPurchaseItem = `-- name: AddPurchaseItem :one
 INSERT INTO purchase_items (purchase_order_id, product_id, quantity, price, status)
-VALUES ($1, $2, $3, $3, $4) RETURNING id
+VALUES ($1, $2, $3, $4, $5) RETURNING id
 `
 
 type AddPurchaseItemParams struct {
-	PurchaseOrderID int  `json:"purchase_order_id"`
-	ProductID       int  `json:"product_id"`
-	Quantity        int  `json:"quantity"`
-	Status          bool `json:"status"`
+	PurchaseOrderID int            `json:"purchase_order_id"`
+	ProductID       int            `json:"product_id"`
+	Quantity        int            `json:"quantity"`
+	Price           pgtype.Numeric `json:"price"`
+	Status          bool           `json:"status"`
 }
 
 func (q *Queries) AddPurchaseItem(ctx context.Context, arg AddPurchaseItemParams) (int, error) {
@@ -43,6 +45,7 @@ func (q *Queries) AddPurchaseItem(ctx context.Context, arg AddPurchaseItemParams
 		arg.PurchaseOrderID,
 		arg.ProductID,
 		arg.Quantity,
+		arg.Price,
 		arg.Status,
 	)
 	var id int
@@ -62,9 +65,53 @@ func (q *Queries) CreatePurchase(ctx context.Context, dealerID pgtype.UUID) (int
 	return id, err
 }
 
+const getProductsBalance = `-- name: GetProductsBalance :many
+SELECT id, product_id, quantity, sum, updated FROM products_balance
+`
+
+func (q *Queries) GetProductsBalance(ctx context.Context) ([]ProductsBalance, error) {
+	rows, err := q.db.Query(ctx, getProductsBalance)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ProductsBalance
+	for rows.Next() {
+		var i ProductsBalance
+		if err := rows.Scan(
+			&i.ID,
+			&i.ProductID,
+			&i.Quantity,
+			&i.Sum,
+			&i.Updated,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertCategory = `-- name: InsertCategory :one
-INSERT INTO categories (name, measurement_id, category_id)
-VALUES ($1, $2, $3) RETURNING id
+WITH existing AS (SELECT ctg.id
+                  FROM categories as ctg
+                  WHERE ctg.name = $1),
+     inserted AS (
+INSERT
+INTO categories ("name", measurement_id, category_id)
+SELECT $1,
+       $2,
+       $3 WHERE NOT EXISTS (SELECT 1 FROM existing)
+    RETURNING id
+)
+SELECT id
+FROM inserted
+UNION ALL
+SELECT id
+FROM existing LIMIT 1
 `
 
 type InsertCategoryParams struct {
@@ -81,8 +128,21 @@ func (q *Queries) InsertCategory(ctx context.Context, arg InsertCategoryParams) 
 }
 
 const insertProduct = `-- name: InsertProduct :one
-INSERT INTO products (name, category_id)
-VALUES ($1, $2) RETURNING id
+WITH existing AS (SELECT p.id, p.category_id
+                  FROM products as p
+                  WHERE p.name = $1),
+     inserted AS (
+INSERT
+INTO products (name, category_id)
+SELECT $1,
+       $2 WHERE NOT EXISTS (SELECT 1 FROM existing)
+    RETURNING id
+)
+SELECT id
+FROM inserted
+UNION ALL
+SELECT id
+FROM existing LIMIT 1
 `
 
 type InsertProductParams struct {

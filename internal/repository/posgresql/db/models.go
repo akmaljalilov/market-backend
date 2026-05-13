@@ -223,9 +223,18 @@ type Product struct {
 	Updated    pgtype.Timestamp `json:"updated"`
 }
 
+type ProductsBalance struct {
+	ID        int              `json:"id"`
+	ProductID int              `json:"product_id"`
+	Quantity  *int             `json:"quantity"`
+	Sum       pgtype.Numeric   `json:"sum"`
+	Updated   pgtype.Timestamp `json:"updated"`
+}
+
 type PurchaseExpense struct {
 	ID             int              `json:"id"`
 	PurchaseItemID int              `json:"purchase_item_id"`
+	Data           *string          `json:"data"`
 	Sum            pgtype.Numeric   `json:"sum"`
 	Created        pgtype.Timestamp `json:"created"`
 	Updated        pgtype.Timestamp `json:"updated"`

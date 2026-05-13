@@ -18,7 +18,7 @@ func New(repo Repository, notifyService NotifyService) *App {
 // Register a new user
 func (a *App) Register(name, email, password string, phoneNumbers []string, role Role, data string) (*User, error) {
 	username := utils.NormalizeUsername(name)
-	user, err := a.repo.GetByUsername(name)
+	user, err := a.repo.GetByUsername(username)
 	if err != nil {
 		resp, err := a.repo.Create(&NewUser{
 			Username:     username,
@@ -57,4 +57,24 @@ func (a *App) SignIn(name, password string) (*SignInResponse, error) {
 func (a *App) GetUserById(id string) (*User, error) {
 	return a.repo.GetById(id)
 
+}
+func (a *App) RegisterDealer(name string, phoneNumbers []string, data string) (string, error) {
+	username := utils.NormalizeUsername(name)
+	user, err := a.repo.GetByUsername(username)
+	if err != nil {
+		password, _ := security.GeneratePassword(5)
+		resp, err := a.repo.Create(&NewUser{
+			Username:     username,
+			Name:         name,
+			Password:     password,
+			Data:         data,
+			PhoneNumbers: phoneNumbers,
+			Role:         RoleDealer,
+		})
+		if err != nil {
+			return "", err
+		}
+		return resp.ID, nil
+	}
+	return user.ID, nil
 }
