@@ -114,7 +114,7 @@ func (r *UsersRepo) GetById(id string) (*users.User, error) {
 	}, nil
 }
 
-func pareRoleToPG(role users.Role) postgres.NullUserRole {
+func pareRoleToPG(role users.Role) postgres.UserRole {
 	pgRole := postgres.NullUserRole{}
 	switch role {
 	case users.RoleAdmin:
@@ -134,12 +134,12 @@ func pareRoleToPG(role users.Role) postgres.NullUserRole {
 		pgRole.Valid = true
 		break
 	}
-	return pgRole
+	return pgRole.UserRole
 }
 
-func pareRolePgToRole(role postgres.NullUserRole) users.Role {
+func pareRolePgToRole(role postgres.UserRole) users.Role {
 	pgRole := users.RoleClient
-	switch role.UserRole {
+	switch role {
 	case postgres.UserRoleAdmin:
 		return users.RoleAdmin
 	case postgres.UserRoleCashier:

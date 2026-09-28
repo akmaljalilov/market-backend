@@ -7,7 +7,7 @@ import (
 type ProductBalance struct {
 	ProductId int
 	Sum       float64
-	Quantity  int
+	Quantity  int64
 }
 type Product struct {
 	ID string

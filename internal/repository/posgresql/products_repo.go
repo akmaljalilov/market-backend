@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"market/internal/app/products"
 	postgres "market/internal/repository/posgresql/db"
+	"market/internal/utils"
 
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/google/uuid"
@@ -40,7 +42,7 @@ func (r ProductsRepo) AddConsumptionPurchaseItem(purchaseItemId int, sum, data s
 		return err
 	}
 	return r.db.AddExpensesPurchaseItem(context.Background(), postgres.AddExpensesPurchaseItemParams{
-		Sum:            n,
+		Amount:         n,
 		PurchaseItemID: purchaseItemId,
 		Data:           &data,
 	})
@@ -52,10 +54,15 @@ func (r ProductsRepo) AddPurchaseItem(purchaseId int, productId int, quantity in
 	if err != nil {
 		return -1, err
 	}
+	var q pgtype.Numeric
+	err = q.ScanScientific(fmt.Sprint(quantity))
+	if err != nil {
+		return -1, err
+	}
 	return r.db.AddPurchaseItem(context.Background(), postgres.AddPurchaseItemParams{
 		PurchaseOrderID: purchaseId,
 		ProductID:       productId,
-		Quantity:        quantity,
+		Quantity:        q,
 		Price:           n,
 		Status:          status,
 	})
@@ -94,14 +101,19 @@ func (r ProductsRepo) GetProductsBalance() ([]products.ProductBalance, error) {
 	}
 	resp := make([]products.ProductBalance, len(list))
 	for i, item := range list {
-		val, err := item.Sum.Float64Value()
+		val, err := item.Amount.Float64Value()
 		if err != nil {
 			log.Error(err)
 			continue
 		}
-		quantity := 0
-		if item.Quantity != nil {
-			quantity = *item.Quantity
+		var quantity int64
+		if item.Quantity.Valid {
+			v, err := utils.NumericToInt64(item.Quantity)
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			quantity = v
 		}
 		resp[i] = products.ProductBalance{
 			ProductId: item.ProductID,

@@ -17,13 +17,11 @@ import (
 var userService *users.App
 
 func init() {
-	cfg := config.Postgres{
-		Username: "root",
-		Host:     "localhost",
-		Password: "mysecretpassword",
-		DbName:   "aj_market",
+	myConfig, err := config.InitConfig()
+	if err != nil {
+		logrus.Fatal(err)
 	}
-	testDB, err := pgxpool.New(context.Background(), cfg.URL())
+	testDB, err := pgxpool.New(context.Background(), myConfig.Postgres.URL())
 	if err != nil {
 		logrus.Fatal("cannot connect to db:", err)
 	}
@@ -33,11 +31,11 @@ func init() {
 	userService = users.New(userRepo, notifyService)
 }
 func TestService_Register(t *testing.T) {
-	name := "Aminjon6"
+	name := "Aminjon7"
 	resp, err := userService.Register(name, "", "@Test123", []string{"+992985068500"}, users.RoleCashier, "")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, resp)
-	assert.Equal(t, resp.Username, "aminjon6")
+	assert.Equal(t, resp.Username, "aminjon7")
 	assert.Equal(t, resp.Role, users.RoleCashier)
 	assert.NotEmpty(t, resp.ID)
 	user, err := userService.SignIn(resp.Username, "@Test123")
@@ -45,7 +43,7 @@ func TestService_Register(t *testing.T) {
 	assert.NotEmpty(t, user)
 }
 func TestService_SignIn(t *testing.T) {
-	user, err := userService.SignIn("aminjon", "@Test123")
+	user, err := userService.SignIn("aminjon6", "@Test123")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, user)
 }

@@ -32,10 +32,10 @@ func (h *ProductsHandler) CreateProduct(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
-	err := h.app.Register(req.Name, req.MeasurementId, req.ParentId)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
+	//err := h.app.Register(req.Name, req.MeasurementId, req.ParentId)
+	//if err != nil {
+	//	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	//}
 
 	return c.SendStatus(fiber.StatusCreated)
 }

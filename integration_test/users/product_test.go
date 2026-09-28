@@ -47,7 +47,7 @@ func TestService_RegisterProduct(t *testing.T) {
 func TestProducts(t *testing.T) {
 	categoryId, err := productApp.InsertCategory("cement", 1, nil)
 	assert.NoError(t, err)
-	productId, err := productApp.InsertProduct("Isfara M(200)", categoryId)
+	productId, err := productApp.InsertProduct("Isfara M(500)", categoryId)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, productId)
 	dealerId, err := userApp.RegisterDealer("Abdu", []string{"+992-92-771-28-29"}, "abdu data")
@@ -69,7 +69,7 @@ func TestProducts(t *testing.T) {
 		balanceProduct := balance[len(balance)-1]
 		assert.Equal(t, balanceProduct.ProductId, productId)
 		assert.Equal(t, balanceProduct.Sum, float64(1610))
-		assert.Equal(t, balanceProduct.Quantity, 1500)
+		assert.Equal(t, balanceProduct.Quantity, int64(1500))
 	})
 }
 func TestSales(t *testing.T) {

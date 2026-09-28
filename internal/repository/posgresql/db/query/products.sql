@@ -46,7 +46,7 @@ INSERT INTO purchase_items (purchase_order_id, product_id, quantity, price, stat
 VALUES ($1, $2, $3, $4, $5) RETURNING id;
 
 -- name: AddExpensesPurchaseItem :exec
-INSERT INTO purchase_expenses (sum, purchase_item_id, data)
+INSERT INTO purchase_expenses (amount, purchase_item_id, data)
 VALUES ($1, $2, $3);
 
 -- name: GetProductsBalance :many
